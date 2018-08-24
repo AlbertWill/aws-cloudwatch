@@ -1,0 +1,8 @@
+{
+  "name": "Aws Cloud Watch",
+  "description": "Logs custom events in Aws Cloud Watch",
+  "require": {
+	"php": ">=5.5",
+	"aws/aws-sdk-php": "dev-master"
+  }
+}
