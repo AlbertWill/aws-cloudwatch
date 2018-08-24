@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: Aws Cloud Watch
- * Plugin URI: https://github.com/newsuk/nu-sun-web-wp-cms
+ * Plugin URI: https://github.com/arunchaitanyajami/aws-cloudwatch
  * Description:  Aws Cloud Watch
  * Version: 1.0
- * Author: TheSUn
- * Author URI: https://www.thesun.co.uk/
+ * Author: Arun Chaitanya Jami
+ * Author URI: https://github.com/achaitanyajami
  */
 
 define( 'AWS_PLUGIN_BASE_DIR', __DIR__ );
