@@ -80,8 +80,8 @@ function aws_create_stream( $name ) {
 /**
  * Add Cloud Watch Log.
  *
- * @param $message
- * @param $type
+ * @param array|object|string $message
+ * @param array|object|string $type
  *
  * @return \Aws\Result|string
  */
@@ -124,3 +124,23 @@ add_filter( 'aws_is_newrelic_enabled', function ( $args ) {
 
 	return false;
 }, 100 );
+
+/**
+ * Decrypt aws key stored in database.
+ *
+ * @param $value
+ *
+ * @return string
+ */
+function thesun_aws_secret( $value ) {
+	if ( empty( $value ) ) {
+		return '';
+	}
+
+	$aws_admin = new AWS_Cloud_Watch_Admin();
+
+	return $aws_admin->decrypt( $value );
+}
+add_filter( 'aws_set_region', 'thesun_aws_secret', 10 );
+add_filter( 'aws_set_secret', 'thesun_aws_secret', 10 );
+add_filter( 'aws_set_key', 'thesun_aws_secret', 10 );
