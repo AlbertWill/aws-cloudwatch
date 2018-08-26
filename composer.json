@@ -4,5 +4,10 @@
   "require": {
 	"php": ">=5.5",
 	"aws/aws-sdk-php": "dev-master"
+  },
+  "scripts": {
+	"post-root-package-install": [
+	  "php composer.phar install"
+	]
   }
 }
