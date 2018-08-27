@@ -24,7 +24,27 @@ class AWS_Cloud_Watch {
 	 */
 	public $is_newrelic_enabled;
 
+	/**
+	 * Is logs Enabled.
+	 *
+	 * @var mixed|void
+	 */
 	public $is_log_enabled;
+
+	/**
+	 * Group Name
+	 */
+	public $group_name;
+
+	/**
+	 * Stream Name
+	 */
+	public $stream_name;
+
+	/**
+	 * Stream Name
+	 */
+	public $stream_recursive;
 
 	/**
 	 * AWS_Cloud_Watch constructor.
@@ -34,6 +54,21 @@ class AWS_Cloud_Watch {
 		$this->config              = $config;
 		$this->is_log_enabled      = apply_filters( 'aws_is_log_enabled', false );
 		$this->is_newrelic_enabled = apply_filters( 'aws_is_newrelic_enabled', false );
+		$this->group_name          = apply_filters( 'aws_log_group_name', get_option(
+			'aws_cloud_watch_group',
+			AWS_CLOUD_WATCH_GROUP_NAME
+		) );
+		$environment               = defined( 'VIP_GO_ENV' ) ? VIP_GO_ENV : 'local';
+		$this->stream_recursive    = apply_filters( 'aws_cloud_watch_stream_recursive', get_option(
+			'aws_cloud_watch_stream_recursive',
+			AWS_CLOUD_WATCH_STREAM_RECURSIVE
+		) );
+
+		if ( 'yes' === $this->stream_recursive ) {
+			$this->stream_name = date( 'Y.m.d' ) . '_' . $environment . '_' . time();
+		} else {
+			$this->stream_name = apply_filters( 'aws_log_stream_name', get_option( 'aws_log_stream_name', AWS_CLOUD_WATCH_STREAM_NAME ) );
+		}
 
 		if ( empty( $this->config ) || ! $this->is_log_enabled ) {
 			$this->cloud_watch = [];
@@ -79,7 +114,7 @@ class AWS_Cloud_Watch {
 		$result = '';
 		try {
 			$result = $this->cloud_watch->ListTagsLogGroup( [
-				'logGroupName' => apply_filters( 'aws_log_group_name', $name ),
+				'logGroupName' => $this->group_name,
 			] );
 		} catch ( \Aws\CloudWatchLogs\Exception\CloudWatchLogsException $e ) {
 			$this->log_error_response( $e );
@@ -129,10 +164,7 @@ class AWS_Cloud_Watch {
 
 		try {
 			$result = $this->cloud_watch->createLogStream( [
-				'logGroupName'  => apply_filters( 'aws_log_group_name', get_option(
-					'aws_cloud_watch_group',
-					AWS_CLOUD_WATCH_GROUP_NAME
-				) ),
+				'logGroupName'  => $this->group_name,
 				'logStreamName' => apply_filters( 'aws_log_stream_name', $name ),
 			] );
 		} catch ( \Aws\CloudWatchLogs\Exception\CloudWatchLogsException $e ) {
@@ -153,25 +185,17 @@ class AWS_Cloud_Watch {
 	public function send_log( $message, $type = '' ) {
 
 		if ( empty( $message ) || empty( $this->cloud_watch ) ) {
-			return false;
+			return;
 		}
 
-		$result      = '';
-		$environment = defined( 'VIP_GO_ENV' ) ? VIP_GO_ENV : 'local';
-		$recursive   = apply_filters( 'aws_cloud_watch_stream_recursive', get_option( 'aws_cloud_watch_stream_recursive', AWS_CLOUD_WATCH_STREAM_RECURSIVE ) );
-		if ( 'yes' === $recursive ) {
-			$stream_name = date( 'Y.m.d' ) . '_' . $environment . '_' . time();
-			$this->create_stream( $stream_name );
-		} else {
-			$stream_name = apply_filters( 'aws_log_stream_name', get_option( 'aws_log_stream_name', AWS_CLOUD_WATCH_STREAM_NAME ) );
+		$result = '';
+		if ( 'yes' === $this->stream_recursive ) {
+			$this->create_stream( $this->stream_name );
 		}
 
 		$event = [
-			'logGroupName'  => apply_filters( 'aws_log_group_name', get_option(
-				'aws_cloud_watch_group',
-				AWS_CLOUD_WATCH_GROUP_NAME
-			) ),
-			'logStreamName' => apply_filters( 'aws_log_stream_name', $stream_name ),
+			'logGroupName'  => $this->group_name,
+			'logStreamName' => $this->stream_name,
 			'logEvents'     => [
 				[
 					'message'   => wp_json_encode( [
@@ -183,7 +207,7 @@ class AWS_Cloud_Watch {
 			],
 		];
 
-		if ( ! empty( $this->get_sequence() ) ) {
+		if ( 'no' === $this->stream_recursive ) {
 			$event['sequenceToken'] = $this->get_sequence();
 		}
 
@@ -192,9 +216,6 @@ class AWS_Cloud_Watch {
 		} catch ( \Aws\CloudWatchLogs\Exception\CloudWatchLogsException $e ) {
 			$this->log_error_response( $e );
 		}
-
-		$sequencetoken = ( ! empty( $result ) && isset( $result['nextSequenceToken'] ) ) ? $result['nextSequenceToken'] : '';
-		$this->insert_sequence( $sequencetoken );
 
 		return $result;
 
@@ -212,26 +233,17 @@ class AWS_Cloud_Watch {
 	}
 
 	/**
-	 * Insert Sequence id.
-	 *
-	 * @param $token
-	 */
-	public function insert_sequence( $token ) {
-		$sequenc_id = $this->get_sequence();
-		if ( empty( $sequenc_id ) ) {
-			add_option( 'sequenceToken', $token );
-		} else {
-			update_option( 'sequenceToken', $token );
-		}
-	}
-
-	/**
 	 * Get sequence value.
 	 *
 	 * @return string sequenceToken Sequence Token
 	 */
 	public function get_sequence() {
-		return get_option( 'sequenceToken', __return_empty_string() );
+		$response = $this->cloud_watch->describeLogStreams( [
+			'logGroupName'        => $this->group_name,
+			'logStreamNamePrefix' => $this->stream_name,
+		] );
+
+		return $response['logStreams']['0']['uploadSequenceToken'];
 	}
 
 }
