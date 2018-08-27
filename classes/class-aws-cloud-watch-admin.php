@@ -238,6 +238,13 @@ class AWS_Cloud_Watch_Admin {
 				if ( 'aws_cloud_watch_group' === $key && ! empty( $value ) && get_option( $key ) !== $value ) {
 					aws_create_loggroup( $value );
 				}
+				$recursive   = apply_filters( 'aws_cloud_watch_stream_recursive',
+					get_option( 'aws_cloud_watch_stream_recursive', AWS_CLOUD_WATCH_STREAM_RECURSIVE ) );
+
+				if ( ! $recursive && 'aws_log_stream_name' === $key && ! empty( $value ) && get_option( $key ) !== $value ) {
+					aws_create_stream( $value );
+				}
+
 				update_option( $key, $value );
 			}
 		} else {

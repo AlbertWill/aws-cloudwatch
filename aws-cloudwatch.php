@@ -11,6 +11,8 @@
 define( 'AWS_PLUGIN_BASE_DIR', __DIR__ );
 define( 'AWS_PLUGIN_DIR_URL', plugin_dir_url( __FILE__ ) );
 define( 'AWS_CLOUD_WATCH_GROUP_NAME', 'WordPress' );
+define( 'AWS_CLOUD_WATCH_STREAM_NAME', 'WordPress' );
+define( 'AWS_CLOUD_WATCH_STREAM_RECURSIVE', false );
 
 if ( ! file_exists( AWS_PLUGIN_BASE_DIR . '/config/aws-config.php' ) ) {
 	return;
@@ -109,6 +111,15 @@ function aws_activate_plugin() {
 			)
 		)
 	);
+
+	$recursive = apply_filters( 'aws_cloud_watch_stream_recursive',
+		get_option( 'aws_cloud_watch_stream_recursive', AWS_CLOUD_WATCH_STREAM_RECURSIVE ) );
+
+	if ( ! $recursive ) {
+		$stream_name = apply_filters( 'aws_log_stream_name',
+			get_option( 'aws_log_stream_name', AWS_CLOUD_WATCH_STREAM_NAME ) );
+		aws_create_stream( $stream_name );
+	}
 }
 
 register_activation_hook( __FILE__, 'aws_activate_plugin' );
@@ -141,6 +152,7 @@ function thesun_aws_secret( $value ) {
 
 	return $aws_admin->decrypt( $value );
 }
+
 add_filter( 'aws_set_region', 'thesun_aws_secret', 10 );
 add_filter( 'aws_set_secret', 'thesun_aws_secret', 10 );
 add_filter( 'aws_set_key', 'thesun_aws_secret', 10 );
