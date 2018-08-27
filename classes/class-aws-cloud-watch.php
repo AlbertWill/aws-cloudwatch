@@ -158,15 +158,13 @@ class AWS_Cloud_Watch {
 
 		$result      = '';
 		$environment = defined( 'VIP_GO_ENV' ) ? VIP_GO_ENV : 'local';
-		$recursive   = apply_filters( 'aws_cloud_watch_stream_recursive',
-			get_option( 'aws_cloud_watch_stream_recursive', AWS_CLOUD_WATCH_STREAM_RECURSIVE ) );
-		if( $recursive ) {
+		$recursive   = apply_filters( 'aws_cloud_watch_stream_recursive', get_option( 'aws_cloud_watch_stream_recursive', AWS_CLOUD_WATCH_STREAM_RECURSIVE ) );
+		if ( 'yes' === $recursive ) {
 			$stream_name = date( 'Y.m.d' ) . '_' . $environment . '_' . time();
-		}else{
+			$this->create_stream( $stream_name );
+		} else {
 			$stream_name = apply_filters( 'aws_log_stream_name', get_option( 'aws_log_stream_name', AWS_CLOUD_WATCH_STREAM_NAME ) );
 		}
-
-		$this->create_stream( $stream_name );
 
 		$event = [
 			'logGroupName'  => apply_filters( 'aws_log_group_name', get_option(

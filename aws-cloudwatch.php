@@ -12,7 +12,7 @@ define( 'AWS_PLUGIN_BASE_DIR', __DIR__ );
 define( 'AWS_PLUGIN_DIR_URL', plugin_dir_url( __FILE__ ) );
 define( 'AWS_CLOUD_WATCH_GROUP_NAME', 'WordPress' );
 define( 'AWS_CLOUD_WATCH_STREAM_NAME', 'WordPress' );
-define( 'AWS_CLOUD_WATCH_STREAM_RECURSIVE', false );
+define( 'AWS_CLOUD_WATCH_STREAM_RECURSIVE', 'yes' );
 
 if ( ! file_exists( AWS_PLUGIN_BASE_DIR . '/config/aws-config.php' ) ) {
 	return;
@@ -115,7 +115,7 @@ function aws_activate_plugin() {
 	$recursive = apply_filters( 'aws_cloud_watch_stream_recursive',
 		get_option( 'aws_cloud_watch_stream_recursive', AWS_CLOUD_WATCH_STREAM_RECURSIVE ) );
 
-	if ( ! $recursive ) {
+	if ( 'no' === $recursive ) {
 		$stream_name = apply_filters( 'aws_log_stream_name',
 			get_option( 'aws_log_stream_name', AWS_CLOUD_WATCH_STREAM_NAME ) );
 		aws_create_stream( $stream_name );
