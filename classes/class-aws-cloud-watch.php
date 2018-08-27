@@ -32,7 +32,7 @@ class AWS_Cloud_Watch {
 	public function __construct() {
 		require AWS_PLUGIN_BASE_DIR . '/config/aws-config.php';
 		$this->config              = $config;
-		$this->is_log_enabled      = apply_filters( 'aws_is_log_enabled', true );
+		$this->is_log_enabled      = apply_filters( 'aws_is_log_enabled', false );
 		$this->is_newrelic_enabled = apply_filters( 'aws_is_newrelic_enabled', false );
 
 		if ( empty( $this->config ) || ! $this->is_log_enabled ) {
