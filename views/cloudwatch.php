@@ -9,12 +9,13 @@
 				       AWS_CLOUD_WATCH_GROUP_NAME
 			       ) ); ?>"/><br/>
 
-			<label>Aws Cloud Watch Stream :</label><br/>
+			<label>Aws Cloud Watch Stream Recursive :</label><br/>
 			<input type="checkbox" name="aws_cloud_watch_stream_recursive"
 				   value="<?php echo esc_attr( get_option(
 				       'aws_cloud_watch_stream_recursive',
 				       AWS_CLOUD_WATCH_STREAM_RECURSIVE
 			       ) ); ?>" <?php if ( AWS_CLOUD_WATCH_STREAM_RECURSIVE ) { ?> checked <?php } ?>/><br/>
+			<label>Aws Cloud Watch Stream :</label><br/>
 			<input type="text" name="aws_log_stream_name"
 				   value="<?php echo esc_attr( get_option(
 				       'aws_log_stream_name',
