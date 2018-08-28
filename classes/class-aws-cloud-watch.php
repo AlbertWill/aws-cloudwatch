@@ -243,7 +243,7 @@ class AWS_Cloud_Watch {
 	 */
 	public function get_sequence() {
 		if ( empty( $this->cloud_watch ) ) {
-			return;
+			return '';
 		}
 
 		$response = $this->cloud_watch->describeLogStreams( [
