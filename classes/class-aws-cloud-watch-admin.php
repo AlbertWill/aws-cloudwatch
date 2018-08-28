@@ -78,6 +78,8 @@ class AWS_Cloud_Watch_Admin {
 		add_action( 'wp_ajax_aws_credentials', [ $this, 'aws_ajax_request' ], 11 );
 		add_action( 'wp_ajax_nopriv_aws_cloud_watch_region', [ $this, 'aws_ajax_request' ], 11 );
 		add_action( 'wp_ajax_aws_cloud_watch_region', [ $this, 'aws_ajax_request' ], 11 );
+		add_action( 'wp_ajax_nopriv_aws_sns_topic', [ $this, 'aws_ajax_request' ], 11 );
+		add_action( 'wp_ajax_aws_sns_topic', [ $this, 'aws_ajax_request' ], 11 );
 	}
 
 	/**
@@ -103,6 +105,15 @@ class AWS_Cloud_Watch_Admin {
 			'manage_options',
 			$this->child_slug,
 			[ $this, 'cloudwatch_page' ]
+		);
+
+		add_submenu_page(
+			$this->parent_page,
+			'AWS SNS Settings',
+			'SNS',
+			'manage_options',
+			'aws-sns-settings',
+			[ $this, 'sns_page' ]
 		);
 	}
 
@@ -145,6 +156,19 @@ class AWS_Cloud_Watch_Admin {
 
 		echo '<div class="wrap">';
 		$file = AWS_PLUGIN_BASE_DIR . '/views/cloudwatch.php';
+
+		if ( file_exists( $file ) ) {
+			require $file;
+		}
+
+		echo '</div>';
+	}
+
+	public function sns_page() {
+		global $title;
+
+		echo '<div class="wrap">';
+		$file = AWS_PLUGIN_BASE_DIR . '/views/sns.php';
 
 		if ( file_exists( $file ) ) {
 			require $file;
@@ -200,7 +224,8 @@ class AWS_Cloud_Watch_Admin {
 	 */
 	public function enqueue_script( $hook ) {
 		if ( ( 'toplevel_page_' . $this->parent_page === $hook ) || ( strtolower( str_replace( ' ', '-',
-					$this->menu_title ) ) . '_page_' . $this->child_slug === $hook )
+					$this->menu_title ) ) . '_page_' . $this->child_slug === $hook ) || ( strtolower( str_replace( ' ', '-',
+					$this->menu_title ) ) . '_page_aws-sns-settings' === $hook )
 		) {
 			$version = date( 'ymdGis' );
 			wp_register_script( 'aws-main-js', AWS_PLUGIN_DIR_URL . 'assets/js/main.js', [ 'jquery' ], $version, true );
@@ -213,6 +238,7 @@ class AWS_Cloud_Watch_Admin {
 	 * Ajax Request.
 	 */
 	public function aws_ajax_request() {
+
 		if ( ! wp_verify_nonce( $_REQUEST['data']['_wpnonce'], $_REQUEST['data']['nonce_key'] ) ) {
 			exit( 'No naughty business please' );
 		}
@@ -245,6 +271,12 @@ class AWS_Cloud_Watch_Admin {
 				if ( 'no' === $recursive && 'aws_log_stream_name' === $key && ! empty( $value ) && get_option( $key ) !== $value ) {
 					aws_create_stream( $value );
 					aws_add_log_to_cloud_watch( 'New stream Created', 'New', true );
+				}
+			}
+		} elseif ( ! empty( $_REQUEST['data'] ) && 'aws_sns_submit' === $key ) {
+			foreach( $_REQUEST['data'] as $key => $value ) {
+				if ( 'aws_sns_topic_arn' === $key && ! empty( $value ) && get_option( $key ) !== $value ) {
+					update_option( $key, $value );
 				}
 			}
 		} else {

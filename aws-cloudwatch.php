@@ -13,6 +13,7 @@ define( 'AWS_PLUGIN_DIR_URL', plugin_dir_url( __FILE__ ) );
 define( 'AWS_CLOUD_WATCH_GROUP_NAME', 'WordPress' );
 define( 'AWS_CLOUD_WATCH_STREAM_NAME', 'WordPress' );
 define( 'AWS_CLOUD_WATCH_STREAM_RECURSIVE', 'yes' );
+define( 'AWS_SNS_TOPIC_ARN', '' );
 
 if ( ! file_exists( AWS_PLUGIN_BASE_DIR . '/config/aws-config.php' ) ) {
 	return;

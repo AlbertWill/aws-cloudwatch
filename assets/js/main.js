@@ -2,6 +2,7 @@
 	$( document ).ready( function () {
 		var awsCredentials     = $( '#aws_credentials_submit' );
 		var awsCloudWatchGroup = $( '#aws_cloud_watch_submit' );
+		var awsSns             = $( '#aws_sns_submit' );
 		
 		/**
 		 * Submit Aws Crediantials.
@@ -48,6 +49,27 @@
 				}
 			);
 		} );
-		
+
+		awsSns.click( function () {
+			event.preventDefault();
+			var data = {};
+			var formData = $( this ).closest( 'form' ).serializeArray();
+			$.each( formData, function ( key, value ) {
+				data[ value.name ] = value.value;
+			} );
+
+			console.log(data);
+
+			$.post(
+				aws_localize_ajax.ajax_url,
+				{
+					'action': 'aws_sns_topic',
+					'data'  : data
+				},
+				function ( response ) {
+					window.location.href = '';
+				}
+			);
+		} );
 	} );
 } )( jQuery, window );
