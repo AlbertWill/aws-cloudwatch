@@ -178,10 +178,11 @@ class AWS_Cloud_Watch {
 	 *
 	 * @param        $message
 	 * @param string $type
+	 * @param bool   $initial
 	 *
 	 * @return \Aws\Result|bool|string
 	 */
-	public function send_log( $message, $type = '' ) {
+	public function send_log( $message, $type = '', $initial = false ) {
 
 		if ( empty( $message ) || empty( $this->cloud_watch ) ) {
 			return;
@@ -206,7 +207,7 @@ class AWS_Cloud_Watch {
 			],
 		];
 
-		if ( 'no' === $this->stream_recursive ) {
+		if ( 'no' === $this->stream_recursive && ! $initial ) {
 			$event['sequenceToken'] = $this->get_sequence();
 		}
 

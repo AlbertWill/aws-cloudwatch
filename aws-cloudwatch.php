@@ -84,17 +84,18 @@ function aws_create_stream( $name ) {
  *
  * @param array|object|string $message
  * @param array|object|string $type
+ * @param bool                $initial
  *
  * @return \Aws\Result|string
  */
-function aws_add_log_to_cloud_watch( $message, $type ) {
+function aws_add_log_to_cloud_watch( $message, $type, $initial = false ) {
 	if ( empty( $message ) || empty( $type ) ) {
 		return '';
 	}
 
 	$cloud_watch = new AWS_Cloud_Watch();
 
-	return $cloud_watch->send_log( $message, $type );
+	return $cloud_watch->send_log( $message, $type, $initial );
 }
 
 /**
