@@ -224,11 +224,15 @@ class AWS_Cloud_Watch {
 	 * Log newrelic if any error exception.
 	 *
 	 * @param \Aws\CloudWatchLogs\Exception\CloudWatchLogsException $exception
+	 *
+	 * @return bool
 	 */
 	public function log_error_response( $exception ) {
 		if ( $this->is_newrelic_enabled ) {
 			newrelic_notice_error( 'Cloud Watch Error form Php Application', $exception );
 		}
+
+		return true;
 	}
 
 	/**
