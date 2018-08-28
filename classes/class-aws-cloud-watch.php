@@ -77,7 +77,6 @@ class AWS_Cloud_Watch {
 		}
 
 		$this->cloud_watch = new CloudWatchLogsClient( $this->config );
-		date_default_timezone_set( 'UTC' );
 	}
 
 	/**

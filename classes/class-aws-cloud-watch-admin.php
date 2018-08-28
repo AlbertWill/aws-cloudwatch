@@ -202,7 +202,7 @@ class AWS_Cloud_Watch_Admin {
 		if ( ( 'toplevel_page_' . $this->parent_page === $hook ) || ( strtolower( str_replace( ' ', '-',
 					$this->menu_title ) ) . '_page_' . $this->child_slug === $hook )
 		) {
-			$version = date( 'ymdGis', filemtime( AWS_PLUGIN_DIR_URL . '/assets/js/main.js' ) );
+			$version = date( 'ymdGis', filemtime( AWS_PLUGIN_DIR_URL . 'assets/js/main.js' ) );
 			wp_register_script( 'aws-main-js', AWS_PLUGIN_DIR_URL . 'assets/js/main.js', [ 'jquery' ], $version, true );
 			wp_localize_script( 'aws-main-js', 'aws_localize_ajax', [ 'ajax_url' => admin_url( 'admin-ajax.php' ) ] );
 			wp_enqueue_script( 'aws-main-js' );

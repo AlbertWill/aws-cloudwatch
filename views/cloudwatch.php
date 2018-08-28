@@ -1,5 +1,6 @@
 <div class="wrap">
 	<h2>Welcome To <?php echo esc_attr( $title ); ?></h2>
+    <h4> Your Next Sequence token is: <?php $aws_settings = new AWS_Cloud_Watch(); echo $aws_settings->get_sequence(); ?></h4>
 	<div class="">
 		<form method="get" id="aws_cloud_watch_form" enctype="multipart/form-data">
 			<label>Aws Cloud Watch Group :</label><br />
