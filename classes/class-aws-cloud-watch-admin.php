@@ -243,6 +243,7 @@ class AWS_Cloud_Watch_Admin {
 
 				if ( 'no' === $recursive && 'aws_log_stream_name' === $key && ! empty( $value ) && get_option( $key ) !== $value ) {
 					aws_create_stream( $value );
+					aws_add_log_to_cloud_watch( 'New stream Created', 'New' );
 				}
 
 				update_option( $key, $value );
