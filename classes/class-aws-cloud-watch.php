@@ -242,6 +242,10 @@ class AWS_Cloud_Watch {
 	 * @return string sequenceToken Sequence Token
 	 */
 	public function get_sequence() {
+		if ( empty( $this->cloud_watch ) ) {
+			return;
+		}
+
 		$response = $this->cloud_watch->describeLogStreams( [
 			'logGroupName'        => $this->group_name,
 			'logStreamNamePrefix' => $this->stream_name,
