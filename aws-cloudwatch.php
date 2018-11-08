@@ -138,6 +138,10 @@ add_filter( 'aws_is_newrelic_enabled', function ( $args ) {
 	return false;
 }, 100 );
 
+add_filter( 'aws_sns_enabled', function ( $args ) {
+	return get_option( 'thesun_disable_ccs_v3', 0 );
+}, 10 );
+
 /**
  * Decrypt aws key stored in database.
  *

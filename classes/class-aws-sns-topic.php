@@ -8,7 +8,7 @@
 
 use Aws\Sns\SnsClient;
 
-class TheSun_SSA_Base_Config {
+class AWS_Sns_Topic {
 
 	protected $sns;
 
@@ -23,7 +23,7 @@ class TheSun_SSA_Base_Config {
 	public function __construct() {
 		require AWS_PLUGIN_BASE_DIR . '/config/aws-config.php';
 		$this->config = $config;
-		$this->is_feature_enabled = get_option( 'thesun_disable_ccs_v3', 0 );
+		$this->is_feature_enabled = apply_filters( 'aws_sns_enabled', false );
 		$this->environment = defined( 'VIP_GO_ENV' ) ? VIP_GO_ENV : 'local';
 		$this->topic_arn = get_option( 'aws_sns_topic_arn', 0 );
 		$this->sns = new SnsClient($this->config);
