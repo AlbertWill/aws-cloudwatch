@@ -29,7 +29,7 @@ class AWS_Sns_Topic {
 		$this->sns = new SnsClient($this->config);
 	}
 
-	public function publish_message( $message, $feed = 'thesuns', $type = 'post' ) {
+	public function publish_message( $message, $feed = 'feedName', $type = 'post' ) {
 
 		if ( strpos($this->topic_arn, 'arn:aws:') !== false ) {
 			$result = $this->sns->publish([
